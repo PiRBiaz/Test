@@ -33,10 +33,6 @@ export class DashboardTableComponent {
   }
 
   ngOnInit(): void {
-        //to move inside app.comp.ts
-
-    this.store.dispatch(loadCountries());
-
     this.countries$ = this.store.select(selectAllCountries);
   }
 

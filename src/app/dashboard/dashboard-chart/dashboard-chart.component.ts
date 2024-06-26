@@ -23,15 +23,12 @@ export class DashboardChartComponent implements OnInit, OnDestroy {
     Chart.register(...registerables);
   }
   ngOnInit(): void {
-    //to move inside app.comp.ts
-    this.store.dispatch(loadCountries());
     this.countries$ = this.store.select(selectAllCountries);
 
     this.countries$.subscribe((countries) => {
-
       this.regions = countries.map((country) => country.region);
 
-      //other idea of graph.
+      //TODO: other idea of graph.
       this.currencies = countries.map((country) =>
         Object.keys(country.currencies).join(', ')
       );
@@ -40,48 +37,59 @@ export class DashboardChartComponent implements OnInit, OnDestroy {
     });
     if (this.regions) {
       this.createRegionDistributionChart();
-
     }
   }
- 
+
   createRegionDistributionChart() {
-      const regionCount = this.regions.reduce((count:any, region) => {
-        count[region] = (count[region] || 0) + 1;
-        return count;
-      }, {});
-      
-      const regionLabels = Object.keys(regionCount);
-      const regionData = Object.values(regionCount);
-  
-      const canvas = document.getElementById('regionChart') as HTMLCanvasElement;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          new Chart(ctx, {
-            type: 'pie',
-            data: {
-              labels: regionLabels,
-              datasets: [{
+    const regionCount = this.regions.reduce((count: any, region) => {
+      count[region] = (count[region] || 0) + 1;
+      return count;
+    }, {});
+
+    const regionLabels = Object.keys(regionCount);
+    const regionData = Object.values(regionCount);
+
+    const canvas = document.getElementById('regionChart') as HTMLCanvasElement;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: regionLabels,
+            datasets: [
+              {
                 label: 'Regions',
                 data: regionData,
-                backgroundColor: regionLabels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`),
-                borderColor: regionLabels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
-                borderWidth: 1
-              }]
-            },
-            options: {
-              responsive: true
-            }
-          });
-        } else {
-          console.error('Failed to get 2D context for region chart.');
-        }
+                backgroundColor: regionLabels.map(
+                  () =>
+                    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+                      Math.random() * 255
+                    )}, ${Math.floor(Math.random() * 255)}, 0.2)`
+                ),
+                borderColor: regionLabels.map(
+                  () =>
+                    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+                      Math.random() * 255
+                    )}, ${Math.floor(Math.random() * 255)}, 1)`
+                ),
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+          },
+        });
       } else {
-        console.error('Failed to find region chart canvas.');
+        console.error('Failed to get 2D context for region chart.');
       }
+    } else {
+      console.error('Failed to find region chart canvas.');
     }
+  }
 
-    ngOnDestroy(): void {
-      // Unsubscribe countries
-    }
+  ngOnDestroy(): void {
+    //TODO: Unsubscribe countries
+  }
 }
